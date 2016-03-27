@@ -9,16 +9,16 @@ defmodule MyEnum do
    Returns: `true` | `false`
   """
   def all?([h|t], fun), do: _all?(t, fun, fun.(h)) 
-  def _all?(_, _, false), do: false
-  def _all?([], _, _), do: true
-  def _all?([h|t], fun, _), do: _all?(t, fun, fun.(h))
+  defp _all?(_, _, false), do: false
+  defp _all?([], _, _), do: true
+  defp _all?([h|t], fun, _), do: _all?(t, fun, fun.(h))
 
   @doc """
     Applies function `fun` to each element of the given enum
   """
   def each(arr, fun), do: _each(arr, fun)
-  def _each([], _), do: :ok
-  def _each([h|t], fun) do
+  defp _each([], _), do: :ok
+  defp _each([h|t], fun) do
     fun.(h)
     _each(t, fun)
   end
@@ -28,7 +28,27 @@ defmodule MyEnum do
    Enum.split splits the enumerable even if the `count` value is negative. This function needs a positive `count` value 
   """
   def split(enumerable, count) when count > 0, do: _split(enumerable, count, [], [])
-  def _split([], _, first, second), do: {Enum.reverse(first), Enum.reverse(second)}
-  def _split([h|t], count, first, second) when count > 0, do: _split(t, count - 1, [h|first], second)
-  def _split([h|t], count, first, second) when count <= 0, do: _split(t, count - 1, first, [h|second])
+  defp _split([], _, first, second), do: {Enum.reverse(first), Enum.reverse(second)}
+  defp _split([h|t], count, first, second) when count > 0, do: _split(t, count - 1,  [h | first], second)
+  defp _split([h|t], count, first, second) when count <= 0, do: _split(t, count - 1, first, [h | second])
+
+  @doc """
+   Filters the `enumerable` and return only those values which met the `condition_fn`
+   """
+  def filter(enumerable, condition_fn), do: _filter(enumerable, condition_fn, [])
+  defp _filter([], _, results), do: Enum.reverse results
+  defp _filter([h|t], condition_fn, results) do
+    if condition_fn.(h) do
+      _filter(t, condition_fn,  [h | results])
+    else
+      _filter(t, condition_fn, results)
+    end
+  end
+  @doc """
+    Takes `count` elements from the given `enumerable`
+  """
+  def take(enumerable, count) when count > 0, do: _take(enumerable, count, [])
+  defp _take([], _, results), do: Enum.reverse results
+  defp _take(_, 0, results), do: Enum.reverse results
+  defp _take([h|t], count, results), do: _take(t, count - 1,  [h | results])
 end
