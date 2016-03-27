@@ -22,4 +22,13 @@ defmodule MyEnum do
     fun.(h)
     _each(t, fun)
   end
+
+  @doc """
+   Splits the `enumerable` into two enumerables, leaving `count` elements in the first enumerable
+   Enum.split splits the enumerable even if the `count` value is negative. This function needs a positive `count` value 
+  """
+  def split(enumerable, count) when count > 0, do: _split(enumerable, count, [], [])
+  def _split([], _, first, second), do: {Enum.reverse(first), Enum.reverse(second)}
+  def _split([h|t], count, first, second) when count > 0, do: _split(t, count - 1, [h|first], second)
+  def _split([h|t], count, first, second) when count <= 0, do: _split(t, count - 1, first, [h|second])
 end
